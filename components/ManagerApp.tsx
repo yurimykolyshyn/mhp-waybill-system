@@ -47,7 +47,7 @@ export default function ManagerApp({ user, onLogout }: Props) {
         className={`fixed left-0 top-0 h-full bg-white border-r border-border shadow-sm z-30 transition-all duration-200 flex flex-col ${sidebarOpen ? 'w-56' : 'w-16'}`}
       >
         {/* Logo */}
-        <div className="px-4 py-5 border-b border-border flex items-center gap-3">
+        <div className="px-4 h-16 border-b border-border flex items-center gap-3 shrink-0">
           <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: MHP_BLUE }}>
             <span className="text-white font-black text-xs">МХП</span>
           </div>
@@ -100,7 +100,7 @@ export default function ManagerApp({ user, onLogout }: Props) {
       {/* Main */}
       <div className={`flex-1 transition-all duration-200 ${sidebarOpen ? 'ml-56' : 'ml-16'}`}>
         {/* Top bar */}
-        <header className="bg-white border-b border-border px-6 py-3 flex items-center gap-4 sticky top-0 z-20">
+        <header className="bg-white border-b border-border px-6 h-16 flex items-center gap-4 sticky top-0 z-20">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-2 rounded-xl hover:bg-primary-light transition-colors focus:outline-none"
