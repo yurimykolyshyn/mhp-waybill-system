@@ -123,7 +123,7 @@ export default function WaybillList({ waybills, onUpdate }: Props) {
                         <button
                           onClick={() => onUpdate({ ...wb, status: 'approved' })}
                           title="Затвердити"
-                          className="p-1.5 rounded-lg transition-colors hover:bg-green-50"
+                          className="p-1.5 rounded-lg transition-colors hover:bg-green-50 focus:outline-none"
                           style={{ color: '#166534' }}
                         >
                           <CheckIcon className="w-4 h-4" />
@@ -132,7 +132,7 @@ export default function WaybillList({ waybills, onUpdate }: Props) {
                       <button
                         onClick={() => setEditingWb(wb)}
                         title="Редагувати"
-                        className="p-1.5 rounded-lg text-gray-500 hover:bg-primary-light transition-colors"
+                        className="p-1.5 rounded-lg text-gray-500 hover:bg-primary-light transition-colors focus:outline-none"
                       >
                         <EditIcon className="w-4 h-4" />
                       </button>
@@ -176,7 +176,7 @@ function EditModal({ waybill, onSave, onClose }: {
             <h3 className="font-semibold text-gray-800">Редагувати ШЛ</h3>
             <p className="text-xs text-gray-500 mt-0.5">{waybill.driverName} · {waybill.vehicleNumber}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors text-xl leading-none">×</button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors text-xl leading-none focus:outline-none">×</button>
         </div>
 
         <div className="px-6 py-5 space-y-4">

@@ -72,11 +72,11 @@ export default function DriversView() {
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-1 justify-end">
                     <button onClick={() => openEdit(u)}
-                      className="p-1.5 rounded-lg text-gray-400 hover:bg-primary-light hover:text-primary transition-colors" title="Редагувати">
+                      className="p-1.5 rounded-lg text-gray-400 hover:bg-primary-light hover:text-primary transition-colors focus:outline-none" title="Редагувати">
                       <EditIcon className="w-4 h-4" />
                     </button>
                     <button onClick={() => setDeleteTarget(u)}
-                      className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Видалити">
+                      className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors focus:outline-none" title="Видалити">
                       <XIcon className="w-4 h-4" />
                     </button>
                   </div>

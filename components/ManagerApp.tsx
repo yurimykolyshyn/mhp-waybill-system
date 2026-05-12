@@ -65,7 +65,7 @@ export default function ManagerApp({ user, onLogout }: Props) {
             <button
               key={v}
               onClick={() => setView(v)}
-              className="w-full flex items-center gap-3 px-4 py-2.5 transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-2.5 transition-colors focus:outline-none"
               style={view === v
                 ? { background: '#E6EEF4', color: MHP_BLUE, fontWeight: 600 }
                 : { color: '#6b7280' }
@@ -89,7 +89,7 @@ export default function ManagerApp({ user, onLogout }: Props) {
           )}
           <button
             onClick={onLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-gray-500 transition-colors hover:bg-primary-light hover:text-primary focus:outline-none"
           >
             <LogoutIcon className="w-4 h-4 shrink-0" />
             {sidebarOpen && <span className="text-sm">Вийти</span>}
@@ -103,7 +103,7 @@ export default function ManagerApp({ user, onLogout }: Props) {
         <header className="bg-white border-b border-border px-6 py-3 flex items-center gap-4 sticky top-0 z-20">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-xl hover:bg-primary-light transition-colors"
+            className="p-2 rounded-xl hover:bg-primary-light transition-colors focus:outline-none"
             style={{ color: '#6b7280' }}
           >
             <MenuIcon className="w-5 h-5" />

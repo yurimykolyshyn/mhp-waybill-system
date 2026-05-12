@@ -66,7 +66,7 @@ export default function DriverApp({ user, onLogout }: Props) {
               <Badge label="стажер" color="#003A5D" bg="#D47E7D" />
             )}
           </div>
-          <button onClick={onLogout} className="p-2 rounded-xl hover:bg-white/10 transition-colors" title="Вийти">
+          <button onClick={onLogout} className="p-2 rounded-xl hover:bg-white/10 transition-colors focus:outline-none" title="Вийти">
             <LogoutIcon className="w-5 h-5" />
           </button>
         </div>
@@ -114,7 +114,7 @@ export default function DriverApp({ user, onLogout }: Props) {
           <button
             key={v}
             onClick={() => setView(v)}
-            className="flex-1 flex flex-col items-center gap-1 py-1.5 rounded-xl transition-colors"
+            className="flex-1 flex flex-col items-center gap-1 py-1.5 rounded-xl transition-colors focus:outline-none"
             style={{ color: view === v ? MHP_BLUE : '#9ca3af' }}
           >
             <Icon className="w-6 h-6" />
