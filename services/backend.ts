@@ -3,6 +3,7 @@ import { MOCK_WAYBILLS, MOCK_VEHICLES, MOCK_USERS } from '../mockData';
 
 const KEY_WAYBILLS = 'mhp_waybills';
 const KEY_VEHICLES = 'mhp_vehicles';
+const KEY_USERS    = 'mhp_users';
 
 function loadWaybills(): Waybill[] {
   try {
@@ -26,21 +27,50 @@ function saveVehicles(vehicles: Vehicle[]) {
   localStorage.setItem(KEY_VEHICLES, JSON.stringify(vehicles));
 }
 
+function loadUsers(): WaybillUser[] {
+  try {
+    const raw = localStorage.getItem(KEY_USERS);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null as any; }
+}
+
+function saveUsers(users: WaybillUser[]) {
+  localStorage.setItem(KEY_USERS, JSON.stringify(users));
+}
+
 export const Backend = {
   initialize() {
     if (!localStorage.getItem(KEY_WAYBILLS)) saveWaybills(MOCK_WAYBILLS);
     if (!localStorage.getItem(KEY_VEHICLES)) saveVehicles(MOCK_VEHICLES);
+    if (!localStorage.getItem(KEY_USERS))    saveUsers(MOCK_USERS);
   },
 
   reset() {
     saveWaybills(MOCK_WAYBILLS);
     saveVehicles(MOCK_VEHICLES);
+    saveUsers(MOCK_USERS);
   },
 
   users: {
-    getAll(): WaybillUser[] { return MOCK_USERS; },
+    getAll(): WaybillUser[] { return loadUsers() || MOCK_USERS; },
+    getDrivers(): WaybillUser[] {
+      return Backend.users.getAll().filter(u => u.role === 'driver');
+    },
     findByLogin(login: string, password: string): WaybillUser | null {
-      return MOCK_USERS.find(u => u.login === login && u.password === password) || null;
+      return Backend.users.getAll().find(u => u.login === login && u.password === password) || null;
+    },
+    save(user: WaybillUser): WaybillUser {
+      const all = Backend.users.getAll();
+      const idx = all.findIndex(u => u.id === user.id);
+      if (idx >= 0) all[idx] = user; else all.push(user);
+      saveUsers(all);
+      return user;
+    },
+    delete(id: string) {
+      saveUsers(Backend.users.getAll().filter(u => u.id !== id));
+    },
+    isLoginTaken(login: string, excludeId?: string): boolean {
+      return Backend.users.getAll().some(u => u.login === login && u.id !== excludeId);
     },
   },
 
@@ -52,6 +82,9 @@ export const Backend = {
       if (idx >= 0) all[idx] = vehicle; else all.push(vehicle);
       saveVehicles(all);
       return vehicle;
+    },
+    delete(id: string) {
+      saveVehicles(Backend.vehicles.getAll().filter(v => v.id !== id));
     },
     updateOdometer(vehicleId: string, odometer: number) {
       const all = Backend.vehicles.getAll();
@@ -120,5 +153,5 @@ export function formatDateTime(iso: string): string {
 }
 
 export function uid(): string {
-  return `w${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { WaybillUser, Waybill, ManagerView } from '../types';
 import { Backend } from '../services/backend';
-import { MOCK_USERS } from '../mockData';
 import Dashboard from './Dashboard';
 import WaybillList from './WaybillList';
+import VehiclesView from './VehiclesView';
+import DriversView from './DriversView';
 import { ListIcon, BusIcon, UserIcon, LogoutIcon, MenuIcon, ChartIcon } from './icons';
 
 interface Props {
@@ -38,8 +39,6 @@ export default function ManagerApp({ user, onLogout }: Props) {
     Backend.waybills.save(wb);
     setWaybills(prev => prev.map(w => w.id === wb.id ? wb : w));
   };
-
-  const vehicles = Backend.vehicles.getAll();
 
   return (
     <div className="min-h-screen bg-surface flex">
@@ -121,80 +120,9 @@ export default function ManagerApp({ user, onLogout }: Props) {
         <main className="overflow-auto">
           {view === 'dashboard' && <Dashboard waybills={waybills} />}
           {view === 'waybills' && <WaybillList waybills={waybills} onUpdate={handleUpdateWaybill} />}
-          {view === 'vehicles' && <VehiclesView vehicles={vehicles} />}
-          {view === 'users' && <UsersView />}
+          {view === 'vehicles' && <VehiclesView />}
+          {view === 'users' && <DriversView />}
         </main>
-      </div>
-    </div>
-  );
-}
-
-function VehiclesView({ vehicles }: { vehicles: ReturnType<typeof Backend.vehicles.getAll> }) {
-  return (
-    <div className="p-6 max-w-4xl space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800">Транспортні засоби</h1>
-      <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border bg-surface">
-              {['Номер', 'Модель', 'Тип', 'Останній одометр'].map(h => (
-                <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {vehicles.map(v => (
-              <tr key={v.id} className="hover:bg-surface transition-colors">
-                <td className="px-5 py-3 font-semibold text-gray-800">{v.number}</td>
-                <td className="px-5 py-3 text-gray-600">{v.model}</td>
-                <td className="px-5 py-3">
-                  <span
-                    className="px-2 py-0.5 rounded-full text-xs font-semibold"
-                    style={v.type === 'regular'
-                      ? { background: '#E6EEF4', color: '#003A5D' }
-                      : { background: '#FAF0EF', color: '#BC6261' }}
-                  >
-                    {v.type === 'regular' ? 'Основний' : 'Резервний'}
-                  </span>
-                </td>
-                <td className="px-5 py-3 text-gray-600">{v.lastOdometer.toLocaleString()} км</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-function UsersView() {
-  const users = MOCK_USERS.filter(u => u.role === 'driver');
-  return (
-    <div className="p-6 max-w-4xl space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800">Водії</h1>
-      <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border bg-surface">
-              {['ПІБ', 'Логін', 'Тип'].map(h => (
-                <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {users.map(u => (
-              <tr key={u.id} className="hover:bg-surface transition-colors">
-                <td className="px-5 py-3 font-medium text-gray-800">{u.fullName}</td>
-                <td className="px-5 py-3 text-gray-500 font-mono text-xs">{u.login}</td>
-                <td className="px-5 py-3">
-                  {u.isApprentice
-                    ? <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: '#FAF0EF', color: '#BC6261' }}>Стажер</span>
-                    : <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: '#DCFCE7', color: '#166534' }}>Водій</span>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </div>
   );
