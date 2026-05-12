@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  /* MHP Brand — Astronaut Blue + New York Pink */
+  --color-primary:       #003A5D;
+  --color-primary-dark:  #002844;
+  --color-primary-mid:   #004F7C;
+  --color-primary-light: #E6EEF4;
+
+  --color-accent:        #D47E7D;
+  --color-accent-dark:   #BC6261;
+  --color-accent-light:  #FAF0EF;
+
+  --color-surface:       #F4F7FA;
+  --color-border:        #D1DCE5;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
