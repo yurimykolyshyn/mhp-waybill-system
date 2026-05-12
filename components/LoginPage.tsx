@@ -74,8 +74,7 @@ export default function LoginPage({ onLogin }: Props) {
                 value={login}
                 onChange={e => { setLogin(e.target.value); setError(''); }}
                 placeholder="Введіть логін"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-gray-800 bg-gray-50"
-                style={{ '--tw-ring-color': '#003A5D' } as any}
+                className="w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 text-gray-800 bg-surface"
                 autoComplete="username"
               />
             </div>
@@ -87,7 +86,7 @@ export default function LoginPage({ onLogin }: Props) {
                 value={password}
                 onChange={e => { setPassword(e.target.value); setError(''); }}
                 placeholder="Введіть пароль"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-gray-800 bg-gray-50"
+                className="w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 text-gray-800 bg-surface"
                 autoComplete="current-password"
               />
             </div>
@@ -116,7 +115,7 @@ export default function LoginPage({ onLogin }: Props) {
                 <button
                   key={u.id}
                   onClick={() => quickLogin(u)}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-primary-light text-left group transition-colors"
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-primary-light text-left group transition-colors"
                 >
                   <div>
                     <span className="text-sm font-medium text-gray-700">{u.fullName.split(' ')[0]} {u.fullName.split(' ')[1]}</span>

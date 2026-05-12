@@ -155,7 +155,7 @@ function VehicleModal({ vehicle, isNew, onSave, onClose }: {
 
 // ── Shared primitives ──────────────────────────────────────────────────────
 
-export const inputCls = 'w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none bg-surface text-sm text-gray-800';
+export const inputCls = 'w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 bg-surface text-sm text-gray-800';
 
 export function Modal({ title, onClose, children }: {
   title: string; onClose: () => void; children: React.ReactNode;

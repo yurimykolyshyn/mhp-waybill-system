@@ -53,12 +53,12 @@ export default function WaybillList({ waybills, onUpdate }: Props) {
           placeholder="Пошук за водієм або ТЗ..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 min-w-48 px-3 py-2 rounded-xl border border-border text-sm focus:outline-none bg-surface text-gray-700"
+          className="flex-1 min-w-48 px-3 py-2 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 bg-surface text-gray-700"
         />
         <select
           value={filterStatus}
           onChange={e => setFilterStatus(e.target.value)}
-          className="px-3 py-2 rounded-xl border border-border text-sm focus:outline-none bg-surface text-gray-700"
+          className="px-3 py-2 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 bg-surface text-gray-700"
         >
           <option value="all">Всі статуси</option>
           <option value="open">Відкрито</option>
@@ -69,7 +69,7 @@ export default function WaybillList({ waybills, onUpdate }: Props) {
           type="date"
           value={filterDate}
           onChange={e => setFilterDate(e.target.value)}
-          className="px-3 py-2 rounded-xl border border-border text-sm focus:outline-none bg-surface text-gray-700"
+          className="px-3 py-2 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 bg-surface text-gray-700"
         />
       </div>
 
@@ -80,44 +80,44 @@ export default function WaybillList({ waybills, onUpdate }: Props) {
             <thead>
               <tr className="border-b border-border bg-surface">
                 {['Водій','ТЗ','Зміна','Відкрито','Закрито','Одом. поч.','Одом. кін.','Пробіг','Тех. операція','Статус','Дії'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                  <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="px-4 py-12 text-center text-gray-400 text-sm">Шляхових листів не знайдено</td>
+                  <td colSpan={11} className="px-5 py-10 text-center text-gray-400 text-sm">Шляхових листів не знайдено</td>
                 </tr>
               ) : filtered.map(wb => (
                 <tr key={wb.id} className="hover:bg-surface transition-colors">
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3">
                     <p className="font-medium text-gray-800 whitespace-nowrap">
                       {wb.driverName.split(' ').slice(0, 2).join(' ')}
                     </p>
                     {wb.isApprentice && (
-                      <span className="text-xs font-semibold" style={{ color: '#BC6261' }}>стажер</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: '#FAF0EF', color: '#BC6261' }}>стажер</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-700 whitespace-nowrap">{wb.vehicleNumber}</td>
-                  <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{wb.shift === 'actual' ? 'Факт.' : wb.shift}</td>
-                  <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{formatDateTime(wb.openTime)}</td>
-                  <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{wb.closeTime ? formatTime(wb.closeTime) : '—'}</td>
-                  <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{wb.odometerStart.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{wb.odometerEnd?.toLocaleString() || '—'}</td>
-                  <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                  <td className="px-5 py-3 font-medium text-gray-700 whitespace-nowrap">{wb.vehicleNumber}</td>
+                  <td className="px-5 py-3 text-gray-600 whitespace-nowrap">{wb.shift === 'actual' ? 'Факт.' : wb.shift}</td>
+                  <td className="px-5 py-3 text-gray-600 whitespace-nowrap">{formatDateTime(wb.openTime)}</td>
+                  <td className="px-5 py-3 text-gray-600 whitespace-nowrap">{wb.closeTime ? formatTime(wb.closeTime) : '—'}</td>
+                  <td className="px-5 py-3 text-gray-600 whitespace-nowrap">{wb.odometerStart.toLocaleString()}</td>
+                  <td className="px-5 py-3 text-gray-600 whitespace-nowrap">{wb.odometerEnd?.toLocaleString() || '—'}</td>
+                  <td className="px-5 py-3 text-gray-600 whitespace-nowrap">
                     {wb.odometerEnd ? `${(wb.odometerEnd - wb.odometerStart).toLocaleString()} км` : '—'}
                   </td>
-                  <td className="px-4 py-3 text-gray-600 max-w-36">
+                  <td className="px-5 py-3 text-gray-600 max-w-36">
                     <span className="truncate block" title={wb.techOperationName}>{wb.techOperationName || '—'}</span>
                     {wb.comment && <span className="text-xs text-gray-400 italic truncate block" title={wb.comment}>{wb.comment}</span>}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
+                  <td className="px-5 py-3 whitespace-nowrap">
                     <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={STATUS_STYLE[wb.status]}>
                       {STATUS_LABELS[wb.status]}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3">
                     <div className="flex items-center gap-1">
                       {wb.status === 'closed' && (
                         <button

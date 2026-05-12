@@ -195,7 +195,7 @@ function HomeView({ user, openWaybill, vehicles, waybills, onOpenShift, onCloseS
       {/* Last waybills */}
       {waybills.length > 0 && (
         <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
-          <p className="px-4 pt-3 pb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Останні ШЛ</p>
+          <p className="px-4 pt-3 pb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Останні ШЛ</p>
           {[...waybills].reverse().slice(0, 3).map(wb => (
             <div key={wb.id} className="px-4 py-3 border-t border-gray-50 flex items-center justify-between">
               <div>
@@ -272,7 +272,7 @@ function OpenShiftView({ user, vehicles, onSubmit, onCancel, existingOpen }: {
       </div>
 
       <div className="bg-white rounded-2xl p-4 border border-border shadow-sm space-y-3">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Автоматично</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Автоматично</p>
         <InfoRow label="ПІБ" value={user.fullName} />
         <InfoRow label="Зміна" value={shiftLabel} />
         <InfoRow label="Час відкриття" value={now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })} />
@@ -280,7 +280,7 @@ function OpenShiftView({ user, vehicles, onSubmit, onCancel, existingOpen }: {
       </div>
 
       <div className="bg-white rounded-2xl p-4 border border-border shadow-sm space-y-4">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Заповніть</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Заповніть</p>
 
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1.5">Транспортний засіб *</label>
@@ -288,7 +288,7 @@ function OpenShiftView({ user, vehicles, onSubmit, onCancel, existingOpen }: {
             value={vehicleId}
             onChange={e => setVehicleId(e.target.value)}
             required
-            className="w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none bg-surface text-gray-800 text-sm"
+            className="w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 bg-surface text-gray-800 text-sm"
           >
             <option value="">— Оберіть ТЗ —</option>
             <optgroup label="Основні">
@@ -321,14 +321,14 @@ function OpenShiftView({ user, vehicles, onSubmit, onCancel, existingOpen }: {
             onChange={e => setComment(e.target.value)}
             placeholder="Необов'язково (не заправлено, стажер...)"
             rows={2}
-            className="w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none bg-surface text-gray-800 text-sm resize-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 bg-surface text-gray-800 text-sm resize-none"
           />
         </div>
       </div>
 
       <div className="flex gap-3">
         <button type="button" onClick={onCancel}
-          className="flex-1 py-3 border border-border text-gray-600 font-semibold rounded-xl hover:bg-gray-50 transition-colors">
+          className="flex-1 py-3 border border-border text-gray-600 font-semibold rounded-xl hover:bg-surface transition-colors">
           Скасувати
         </button>
         <button type="submit" disabled={!vehicleId}
@@ -379,7 +379,7 @@ function CloseShiftView({ waybill, onSubmit, onCancel }: {
       </div>
 
       <div className="bg-white rounded-2xl p-4 border border-border shadow-sm space-y-3">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Поточний ШЛ</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Поточний ШЛ</p>
         <InfoRow label="ТЗ" value={waybill.vehicleNumber} />
         <InfoRow label="Відкрито" value={formatTime(waybill.openTime)} />
         <InfoRow label="Одометр (початок)" value={`${waybill.odometerStart.toLocaleString()} км`} />
@@ -387,7 +387,7 @@ function CloseShiftView({ waybill, onSubmit, onCancel }: {
       </div>
 
       <div className="bg-white rounded-2xl p-4 border border-border shadow-sm space-y-4">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Внесіть дані</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Внесіть дані</p>
 
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1.5">Одометр (кінець) *</label>
@@ -399,7 +399,7 @@ function CloseShiftView({ waybill, onSubmit, onCancel }: {
               placeholder={String(waybill.odometerStart)}
               min={waybill.odometerStart}
               required
-              className="w-full px-3 py-2.5 pr-12 rounded-xl border border-border focus:outline-none bg-surface text-gray-800 text-sm"
+              className="w-full px-3 py-2.5 pr-12 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 bg-surface text-gray-800 text-sm"
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">км</span>
           </div>
@@ -416,7 +416,7 @@ function CloseShiftView({ waybill, onSubmit, onCancel }: {
             value={techOpId}
             onChange={e => { setTechOpId(e.target.value); setError(''); }}
             required
-            className="w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none bg-surface text-gray-800 text-sm"
+            className="w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 bg-surface text-gray-800 text-sm"
           >
             <option value="">— Оберіть операцію —</option>
             {MOCK_TECH_OPERATIONS.map(t => (
@@ -432,7 +432,7 @@ function CloseShiftView({ waybill, onSubmit, onCancel }: {
             onChange={e => setComment(e.target.value)}
             placeholder="Не працює одометр, не відбулась заправка..."
             rows={2}
-            className="w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none bg-surface text-gray-800 text-sm resize-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 bg-surface text-gray-800 text-sm resize-none"
           />
         </div>
 
@@ -441,7 +441,7 @@ function CloseShiftView({ waybill, onSubmit, onCancel }: {
 
       <div className="flex gap-3">
         <button type="button" onClick={onCancel}
-          className="flex-1 py-3 border border-border text-gray-600 font-semibold rounded-xl hover:bg-gray-50 transition-colors">
+          className="flex-1 py-3 border border-border text-gray-600 font-semibold rounded-xl hover:bg-surface transition-colors">
           Скасувати
         </button>
         <button type="submit"
@@ -467,7 +467,7 @@ function HistoryView({ waybills }: { waybills: Waybill[] }) {
 
   return (
     <div className="space-y-3">
-      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-1">Мої шляхові листи</p>
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1">Мої шляхові листи</p>
       {waybills.map(wb => (
         <div key={wb.id} className="bg-white rounded-2xl border border-border shadow-sm p-4 space-y-2">
           <div className="flex items-center justify-between">
