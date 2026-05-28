@@ -20,6 +20,18 @@ export default function App() {
       try { setCurrentUser(JSON.parse(saved)); } catch {}
     }
     setLoading(false);
+
+    // Clear localStorage when the tab/window is actually closed (not on refresh).
+    // pagehide fires on both close and bfcache entry; event.persisted=true means
+    // bfcache (back/forward nav or refresh) — we skip clearing in that case.
+    const onPageHide = (e: PageTransitionEvent) => {
+      if (!e.persisted && sessionStorage.getItem(SESSION_KEY)) {
+        Backend.clearAll();
+        sessionStorage.removeItem(SESSION_KEY);
+      }
+    };
+    window.addEventListener('pagehide', onPageHide);
+    return () => window.removeEventListener('pagehide', onPageHide);
   }, []);
 
   const handleLogin = (user: WaybillUser) => {
@@ -29,6 +41,7 @@ export default function App() {
 
   const handleLogout = () => {
     sessionStorage.removeItem(SESSION_KEY);
+    Backend.clearAll();   // wipe data so the next user on this device starts fresh
     setCurrentUser(null);
   };
 

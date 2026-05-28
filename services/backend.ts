@@ -65,6 +65,13 @@ export const Backend = {
     saveExams([]);
   },
 
+  clearAll() {
+    localStorage.removeItem(KEY_WAYBILLS);
+    localStorage.removeItem(KEY_VEHICLES);
+    localStorage.removeItem(KEY_USERS);
+    localStorage.removeItem(KEY_EXAMS);
+  },
+
   users: {
     getAll(): WaybillUser[] { return loadUsers() || MOCK_USERS; },
     getDrivers(): WaybillUser[] {
