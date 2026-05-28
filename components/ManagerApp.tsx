@@ -40,6 +40,12 @@ export default function ManagerApp({ user, onLogout }: Props) {
     setWaybills(prev => prev.map(w => w.id === wb.id ? wb : w));
   };
 
+  const handleAddWaybill = (wb: Waybill) => {
+    Backend.waybills.save(wb);
+    if (wb.odometerEnd) Backend.vehicles.updateOdometer(wb.vehicleId, wb.odometerEnd);
+    setWaybills(prev => [...prev, wb]);
+  };
+
   return (
     <div className="min-h-screen bg-surface flex">
       {/* Sidebar */}
@@ -119,7 +125,7 @@ export default function ManagerApp({ user, onLogout }: Props) {
         {/* Content */}
         <main className="overflow-auto">
           {view === 'dashboard' && <Dashboard waybills={waybills} />}
-          {view === 'waybills' && <WaybillList waybills={waybills} onUpdate={handleUpdateWaybill} />}
+          {view === 'waybills' && <WaybillList waybills={waybills} onUpdate={handleUpdateWaybill} onAdd={handleAddWaybill} />}
           {view === 'vehicles' && <VehiclesView />}
           {view === 'users' && <DriversView />}
         </main>

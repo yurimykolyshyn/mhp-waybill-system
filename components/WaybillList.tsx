@@ -2,11 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { Waybill } from '../types';
 import { formatDateTime, formatTime } from '../services/backend';
 import { MOCK_TECH_OPERATIONS } from '../mockData';
-import { EditIcon, CheckIcon } from './icons';
+import { EditIcon, CheckIcon, PlusIcon } from './icons';
+import CreateWaybillModal from './CreateWaybillModal';
 
 interface Props {
   waybills: Waybill[];
   onUpdate: (wb: Waybill) => void;
+  onAdd: (wb: Waybill) => void;
 }
 
 const STATUS_STYLE: Record<string, { color: string; bg: string }> = {
@@ -18,11 +20,12 @@ const STATUS_LABELS: Record<string, string> = {
   open: 'Відкрито', closed: 'Закрито', approved: 'Затверджено',
 };
 
-export default function WaybillList({ waybills, onUpdate }: Props) {
+export default function WaybillList({ waybills, onUpdate, onAdd }: Props) {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterDate, setFilterDate] = useState('');
   const [editingWb, setEditingWb] = useState<Waybill | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
 
   const filtered = useMemo(() => {
     return waybills
@@ -44,6 +47,13 @@ export default function WaybillList({ waybills, onUpdate }: Props) {
           <h1 className="text-2xl font-bold text-gray-800">Шляхові листи</h1>
           <p className="text-gray-500 text-sm mt-0.5">{filtered.length} з {waybills.length}</p>
         </div>
+        <button
+          onClick={() => setShowCreate(true)}
+          className="flex items-center gap-2 px-4 py-2 text-white text-sm font-semibold rounded-xl transition-opacity hover:opacity-90 focus:outline-none"
+          style={{ background: '#003A5D' }}
+        >
+          <PlusIcon className="w-4 h-4" /> Додати ШЛ
+        </button>
       </div>
 
       {/* Filters */}
@@ -144,6 +154,13 @@ export default function WaybillList({ waybills, onUpdate }: Props) {
           </table>
         </div>
       </div>
+
+      {showCreate && (
+        <CreateWaybillModal
+          onSave={(wb) => { onAdd(wb); setShowCreate(false); }}
+          onClose={() => setShowCreate(false)}
+        />
+      )}
 
       {editingWb && (
         <EditModal

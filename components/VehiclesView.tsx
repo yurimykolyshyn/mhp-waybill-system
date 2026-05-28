@@ -184,15 +184,15 @@ export function Field({ label, children }: { label: string; children: React.Reac
   );
 }
 
-export function ModalActions({ onClose, label }: { onClose: () => void; label: string }) {
+export function ModalActions({ onClose, label, disabled }: { onClose: () => void; label: string; disabled?: boolean }) {
   return (
     <div className="flex gap-3 pt-2">
       <button type="button" onClick={onClose}
-        className="flex-1 py-2.5 border border-border text-gray-600 font-semibold rounded-xl hover:bg-surface transition-colors text-sm">
+        className="flex-1 py-2.5 border border-border text-gray-600 font-semibold rounded-xl hover:bg-surface transition-colors text-sm focus:outline-none">
         Скасувати
       </button>
-      <button type="submit"
-        className="flex-1 py-2.5 text-white font-semibold rounded-xl transition-opacity hover:opacity-90 text-sm"
+      <button type="submit" disabled={disabled}
+        className="flex-1 py-2.5 text-white font-semibold rounded-xl transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed text-sm focus:outline-none"
         style={{ background: '#003A5D' }}>
         {label}
       </button>
