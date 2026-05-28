@@ -10,6 +10,7 @@ export const MOCK_USERS: WaybillUser[] = [
   { id: 'u7', fullName: 'Руда Наталія Вікторівна', login: 'ruda', password: 'admin', role: 'logist' },
   { id: 'u8', fullName: 'Мороз Сергій Олегович', login: 'moroz', password: 'admin', role: 'dispatcher' },
   { id: 'u9', fullName: 'Адміністратор', login: 'admin', password: 'admin', role: 'admin' },
+  { id: 'u10', fullName: 'Петренко Галина Іванівна', login: 'petrenkomd', password: 'med123', role: 'medic' },
 ];
 
 export const MOCK_VEHICLES: Vehicle[] = [

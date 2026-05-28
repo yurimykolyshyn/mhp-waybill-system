@@ -1,9 +1,10 @@
-import { Waybill, Vehicle, WaybillUser } from '../types';
+import { Waybill, Vehicle, WaybillUser, MedicalExam } from '../types';
 import { MOCK_WAYBILLS, MOCK_VEHICLES, MOCK_USERS } from '../mockData';
 
 const KEY_WAYBILLS = 'mhp_waybills';
 const KEY_VEHICLES = 'mhp_vehicles';
 const KEY_USERS    = 'mhp_users';
+const KEY_EXAMS    = 'mhp_exams';
 
 function loadWaybills(): Waybill[] {
   try {
@@ -38,17 +39,30 @@ function saveUsers(users: WaybillUser[]) {
   localStorage.setItem(KEY_USERS, JSON.stringify(users));
 }
 
+function loadExams(): MedicalExam[] {
+  try {
+    const raw = localStorage.getItem(KEY_EXAMS);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveExams(exams: MedicalExam[]) {
+  localStorage.setItem(KEY_EXAMS, JSON.stringify(exams));
+}
+
 export const Backend = {
   initialize() {
     if (!localStorage.getItem(KEY_WAYBILLS)) saveWaybills(MOCK_WAYBILLS);
     if (!localStorage.getItem(KEY_VEHICLES)) saveVehicles(MOCK_VEHICLES);
     if (!localStorage.getItem(KEY_USERS))    saveUsers(MOCK_USERS);
+    if (!localStorage.getItem(KEY_EXAMS))    saveExams([]);
   },
 
   reset() {
     saveWaybills(MOCK_WAYBILLS);
     saveVehicles(MOCK_VEHICLES);
     saveUsers(MOCK_USERS);
+    saveExams([]);
   },
 
   users: {
@@ -100,6 +114,41 @@ export const Backend = {
         .sort((a, b) => new Date(b.closeTime!).getTime() - new Date(a.closeTime!).getTime())[0];
       if (lastClosed?.odometerEnd) return lastClosed.odometerEnd;
       return all.find(v => v.id === vehicleId)?.lastOdometer || 0;
+    },
+  },
+
+  exams: {
+    getAll(): MedicalExam[] { return loadExams(); },
+    getByDriver(driverId: string): MedicalExam[] {
+      return loadExams().filter(e => e.driverId === driverId);
+    },
+    getToday(): MedicalExam[] {
+      const today = new Date().toDateString();
+      return loadExams().filter(e => new Date(e.date).toDateString() === today);
+    },
+    save(exam: MedicalExam): MedicalExam {
+      const all = loadExams();
+      const idx = all.findIndex(e => e.id === exam.id);
+      if (idx >= 0) all[idx] = exam; else all.push(exam);
+      saveExams(all);
+      return exam;
+    },
+    getActiveClearance(driverId: string, shift: string, date: Date): MedicalExam | null {
+      const dateStr = date.toDateString();
+      return loadExams().find(e =>
+        e.driverId === driverId &&
+        e.shift === shift &&
+        new Date(e.date).toDateString() === dateStr &&
+        e.result === 'cleared'
+      ) || null;
+    },
+    getShiftExam(driverId: string, shift: string, date: Date): MedicalExam | null {
+      const dateStr = date.toDateString();
+      return loadExams().find(e =>
+        e.driverId === driverId &&
+        e.shift === shift &&
+        new Date(e.date).toDateString() === dateStr
+      ) || null;
     },
   },
 

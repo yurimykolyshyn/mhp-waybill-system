@@ -12,6 +12,7 @@ const ROLE_LABELS: Record<string, string> = {
   mechanic: 'Механік',
   logist: 'Логіст',
   admin: 'Адміністратор',
+  medic: 'Медик',
 };
 
 export default function LoginPage({ onLogin }: Props) {
@@ -44,6 +45,7 @@ export default function LoginPage({ onLogin }: Props) {
   const demoUsers = [
     allUsers.find(u => u.role === 'driver' && !u.isApprentice)!,
     allUsers.find(u => u.role === 'driver' && u.isApprentice)!,
+    allUsers.find(u => u.role === 'medic')!,
     allUsers.find(u => u.role === 'logist')!,
     allUsers.find(u => u.role === 'dispatcher')!,
   ].filter(Boolean);

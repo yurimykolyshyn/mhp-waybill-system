@@ -1,4 +1,4 @@
-export type UserRole = 'driver' | 'dispatcher' | 'mechanic' | 'logist' | 'admin';
+export type UserRole = 'driver' | 'dispatcher' | 'mechanic' | 'logist' | 'admin' | 'medic';
 
 export interface WaybillUser {
   id: string;
@@ -39,9 +39,33 @@ export interface Waybill {
   techOperationId?: string;
   techOperationName?: string;
   comment?: string;
+  examId?: string;
   status: WaybillStatus;
   isApprentice: boolean;
   createdAt: string;      // ISO
+}
+
+export type DrugTestResult = 'not_done' | 'negative' | 'positive';
+
+export interface MedicalExam {
+  id: string;
+  driverId: string;
+  driverName: string;
+  medicId: string;
+  medicName: string;
+  date: string;            // ISO
+  shift: ShiftType;
+  // Physiological — all optional
+  bpSystolic?: number;
+  bpDiastolic?: number;
+  pulse?: number;
+  alcoholMgl?: number;
+  drugTest?: DrugTestResult;
+  complaints?: string;
+  // Result — required
+  result: 'cleared' | 'suspended';
+  suspendReason?: string;  // required when result === 'suspended'
+  createdAt: string;       // ISO
 }
 
 export type ManagerView = 'dashboard' | 'waybills' | 'vehicles' | 'users';

@@ -102,9 +102,14 @@ export default function WaybillList({ waybills, onUpdate, onAdd }: Props) {
               ) : filtered.map(wb => (
                 <tr key={wb.id} className="hover:bg-surface transition-colors">
                   <td className="px-5 py-3">
-                    <p className="font-medium text-gray-800 whitespace-nowrap">
-                      {wb.driverName.split(' ').slice(0, 2).join(' ')}
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-medium text-gray-800 whitespace-nowrap">
+                        {wb.driverName.split(' ').slice(0, 2).join(' ')}
+                      </p>
+                      {wb.examId && (
+                        <span title="Медогляд пройдено" className="inline-flex items-center justify-center w-4 h-4 rounded-full text-white text-xs font-bold shrink-0" style={{ background: '#166534' }}>✓</span>
+                      )}
+                    </div>
                     {wb.isApprentice && (
                       <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: '#FAF0EF', color: '#BC6261' }}>стажер</span>
                     )}

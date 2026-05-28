@@ -132,7 +132,8 @@ function HomeView({ user, openWaybill, vehicles, waybills, onOpenShift, onCloseS
   waybills: Waybill[]; onOpenShift: () => void; onCloseShift: () => void;
 }) {
   const now = new Date();
-  const { label: shiftLabel } = detectShift(now);
+  const { shift: currentShift, label: shiftLabel } = detectShift(now);
+  const shiftExam = Backend.exams.getShiftExam(user.id, currentShift, now);
 
   return (
     <div className="space-y-4">
@@ -174,6 +175,29 @@ function HomeView({ user, openWaybill, vehicles, waybills, onOpenShift, onCloseS
             <CheckIcon className="w-5 h-5" />
             Закрити зміну
           </button>
+        </div>
+      ) : shiftExam?.result === 'suspended' ? (
+        <div className="rounded-2xl p-4 space-y-2 border" style={{ background: '#FEF2F2', borderColor: '#FCA5A5' }}>
+          <div className="flex items-center gap-2">
+            <span className="text-base">🚫</span>
+            <span className="text-sm font-semibold" style={{ color: '#991B1B' }}>Водія відсторонено</span>
+          </div>
+          <p className="text-sm" style={{ color: '#B91C1C' }}>
+            {shiftExam.suspendReason || 'За рішенням медичного працівника.'}
+          </p>
+          <p className="text-xs" style={{ color: '#EF4444' }}>
+            Зверніться до медичного працівника або керівника.
+          </p>
+        </div>
+      ) : !shiftExam ? (
+        <div className="rounded-2xl p-4 space-y-2 border" style={{ background: '#FFFBEB', borderColor: '#FCD34D' }}>
+          <div className="flex items-center gap-2">
+            <span className="text-base">🔒</span>
+            <span className="text-sm font-semibold" style={{ color: '#92600A' }}>Медичний огляд не пройдено</span>
+          </div>
+          <p className="text-sm" style={{ color: '#B45309' }}>
+            Зверніться до медичного працівника для проходження передрейсового огляду перед початком зміни.
+          </p>
         </div>
       ) : (
         <button
@@ -237,6 +261,7 @@ function OpenShiftView({ user, vehicles, onSubmit, onCancel, existingOpen }: {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedVehicle) return;
+    const clearance = Backend.exams.getActiveClearance(user.id, shift, now);
     const wb: Waybill = {
       id: uid(),
       driverId: user.id,
@@ -246,6 +271,7 @@ function OpenShiftView({ user, vehicles, onSubmit, onCancel, existingOpen }: {
       shift,
       openTime: now.toISOString(),
       odometerStart,
+      examId: clearance?.id,
       comment: comment || undefined,
       status: 'open',
       isApprentice: !!user.isApprentice,

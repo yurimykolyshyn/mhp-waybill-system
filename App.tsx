@@ -3,6 +3,7 @@ import { WaybillUser } from './types';
 import { Backend } from './services/backend';
 import LoginPage from './components/LoginPage';
 import DriverApp from './components/DriverApp';
+import MedicApp from './components/MedicApp';
 import ManagerApp from './components/ManagerApp';
 
 const SESSION_KEY = 'mhp_session_user';
@@ -50,6 +51,10 @@ export default function App() {
 
   if (currentUser.role === 'driver') {
     return <DriverApp user={currentUser} onLogout={handleLogout} />;
+  }
+
+  if (currentUser.role === 'medic') {
+    return <MedicApp user={currentUser} onLogout={handleLogout} />;
   }
 
   return <ManagerApp user={currentUser} onLogout={handleLogout} />;
