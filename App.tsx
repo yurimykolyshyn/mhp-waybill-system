@@ -21,12 +21,11 @@ export default function App() {
     }
     setLoading(false);
 
-    // Clear localStorage when the tab/window is actually closed (not on refresh).
-    // pagehide fires on both close and bfcache entry; event.persisted=true means
-    // bfcache (back/forward nav or refresh) — we skip clearing in that case.
+    // On tab/window close: clear only the session token (who is logged in).
+    // localStorage (the shared DB with waybills, exams, etc.) must persist
+    // between user switches — e.g. medic saves an exam, then driver logs in.
     const onPageHide = (e: PageTransitionEvent) => {
-      if (!e.persisted && sessionStorage.getItem(SESSION_KEY)) {
-        Backend.clearAll();
+      if (!e.persisted) {
         sessionStorage.removeItem(SESSION_KEY);
       }
     };
@@ -41,7 +40,6 @@ export default function App() {
 
   const handleLogout = () => {
     sessionStorage.removeItem(SESSION_KEY);
-    Backend.clearAll();   // wipe data so the next user on this device starts fresh
     setCurrentUser(null);
   };
 
