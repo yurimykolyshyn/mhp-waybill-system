@@ -534,9 +534,9 @@ function CloseShiftView({ waybill, onSubmit, onCancel }: {
         )}
         {additionalTechOps.length < 2 && (
           <button type="button" onClick={addExtraOp}
-            className="text-sm font-medium transition-opacity hover:opacity-70"
-            style={{ color: '#003A5D' }}>
-            + Додати операцію
+            className="w-full py-2.5 rounded-xl border text-sm font-semibold transition-colors hover:opacity-90 focus:outline-none"
+            style={{ borderColor: '#003A5D', color: '#003A5D', background: '#E6EEF4' }}>
+            + Додати ще операцію
           </button>
         )}
 
