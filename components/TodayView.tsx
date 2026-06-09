@@ -125,7 +125,7 @@ export default function TodayView() {
               ) : assignments.map(wb => {
                 const medStatus  = getMedStatus(wb.driverId, wb.shift, today);
                 const badge      = MED_BADGE[medStatus];
-                const canSubstitute = wb.status === 'planned' && medStatus !== 'cleared';
+                const canSubstitute = medStatus !== 'cleared';
 
                 return (
                   <tr key={wb.id} className="hover:bg-surface transition-colors">
