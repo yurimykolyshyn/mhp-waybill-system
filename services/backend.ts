@@ -178,6 +178,39 @@ export const Backend = {
       const all = Backend.waybills.getAll().filter(w => w.id !== id);
       saveWaybills(all);
     },
+    getPlanned(date: Date): Waybill[] {
+      const dateStr = date.toDateString();
+      return Backend.waybills.getAll().filter(w =>
+        w.status === 'planned' &&
+        new Date(w.openTime).toDateString() === dateStr
+      );
+    },
+    getPlannedForDriver(driverId: string, shift: string, date: Date): Waybill | null {
+      const dateStr = date.toDateString();
+      return Backend.waybills.getAll().find(w =>
+        w.driverId === driverId &&
+        w.shift === shift &&
+        w.status === 'planned' &&
+        new Date(w.openTime).toDateString() === dateStr
+      ) || null;
+    },
+    getTodayAssignments(): Waybill[] {
+      const dateStr = new Date().toDateString();
+      return Backend.waybills.getAll().filter(w =>
+        (w.status === 'planned' || w.status === 'open') &&
+        new Date(w.openTime).toDateString() === dateStr
+      );
+    },
+    confirm(waybillId: string, actualOpenTime: string, odometerStart: number, examId?: string) {
+      const all = Backend.waybills.getAll();
+      const wb = all.find(w => w.id === waybillId);
+      if (!wb) return;
+      wb.status = 'open';
+      wb.openTime = actualOpenTime;
+      wb.odometerStart = odometerStart;
+      if (examId) wb.examId = examId;
+      saveWaybills(all);
+    },
   },
 };
 

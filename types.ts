@@ -23,7 +23,7 @@ export interface TechOperation {
 }
 
 export type ShiftType = 'I' | 'II' | 'III' | 'actual';
-export type WaybillStatus = 'open' | 'closed' | 'approved';
+export type WaybillStatus = 'open' | 'closed' | 'approved' | 'planned';
 
 export interface Waybill {
   id: string;
@@ -40,6 +40,7 @@ export interface Waybill {
   techOperationName?: string;
   comment?: string;
   examId?: string;
+  additionalTechOps?: { id: string; name: string }[];
   status: WaybillStatus;
   isApprentice: boolean;
   createdAt: string;      // ISO
@@ -68,4 +69,4 @@ export interface MedicalExam {
   createdAt: string;       // ISO
 }
 
-export type ManagerView = 'dashboard' | 'waybills' | 'vehicles' | 'users';
+export type ManagerView = 'dashboard' | 'waybills' | 'vehicles' | 'users' | 'assignments' | 'today';

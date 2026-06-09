@@ -4,6 +4,7 @@ import { formatDateTime, formatTime } from '../services/backend';
 import { MOCK_TECH_OPERATIONS } from '../mockData';
 import { EditIcon, CheckIcon, PlusIcon } from './icons';
 import CreateWaybillModal from './CreateWaybillModal';
+import ExportModal from './ExportModal';
 
 interface Props {
   waybills: Waybill[];
@@ -26,9 +27,11 @@ export default function WaybillList({ waybills, onUpdate, onAdd }: Props) {
   const [filterDate, setFilterDate] = useState('');
   const [editingWb, setEditingWb] = useState<Waybill | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [showExport, setShowExport] = useState(false);
 
   const filtered = useMemo(() => {
     return waybills
+      .filter(w => w.status !== 'planned')
       .filter(w => {
         const matchSearch = !search ||
           w.driverName.toLowerCase().includes(search.toLowerCase()) ||
@@ -47,13 +50,21 @@ export default function WaybillList({ waybills, onUpdate, onAdd }: Props) {
           <h1 className="text-2xl font-bold text-gray-800">Шляхові листи</h1>
           <p className="text-gray-500 text-sm mt-0.5">{filtered.length} з {waybills.length}</p>
         </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2 text-white text-sm font-semibold rounded-xl transition-opacity hover:opacity-90 focus:outline-none"
-          style={{ background: '#003A5D' }}
-        >
-          <PlusIcon className="w-4 h-4" /> Додати ШЛ
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowExport(true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl border border-border hover:bg-surface transition-colors focus:outline-none text-gray-600"
+          >
+            ⬇ Вивантажити ШЛ
+          </button>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="flex items-center gap-2 px-4 py-2 text-white text-sm font-semibold rounded-xl transition-opacity hover:opacity-90 focus:outline-none"
+            style={{ background: '#003A5D' }}
+          >
+            <PlusIcon className="w-4 h-4" /> Додати ШЛ
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -125,6 +136,9 @@ export default function WaybillList({ waybills, onUpdate, onAdd }: Props) {
                   </td>
                   <td className="px-5 py-3 text-gray-600 max-w-36">
                     <span className="truncate block" title={wb.techOperationName}>{wb.techOperationName || '—'}</span>
+                    {wb.additionalTechOps?.map((op, i) => (
+                      <span key={i} className="truncate block text-xs text-gray-400">+ {op.name}</span>
+                    ))}
                     {wb.comment && <span className="text-xs text-gray-400 italic truncate block" title={wb.comment}>{wb.comment}</span>}
                   </td>
                   <td className="px-5 py-3 whitespace-nowrap">
@@ -174,6 +188,9 @@ export default function WaybillList({ waybills, onUpdate, onAdd }: Props) {
           onClose={() => setEditingWb(null)}
         />
       )}
+      {showExport && (
+        <ExportModal onClose={() => setShowExport(false)} />
+      )}
     </div>
   );
 }
@@ -184,10 +201,35 @@ function EditModal({ waybill, onSave, onClose }: {
   const [techOpId, setTechOpId] = useState(waybill.techOperationId || '');
   const [comment, setComment] = useState(waybill.comment || '');
   const [status, setStatus] = useState(waybill.status);
+  const [additionalTechOps, setAdditionalTechOps] = useState<{ id: string; name: string }[]>(
+    waybill.additionalTechOps ?? []
+  );
+
+  const addExtraOp = () => {
+    if (additionalTechOps.length >= 2) return;
+    setAdditionalTechOps(prev => [...prev, { id: '', name: '' }]);
+  };
+  const updateExtraOp = (index: number, id: string) => {
+    const op = MOCK_TECH_OPERATIONS.find(t => t.id === id);
+    setAdditionalTechOps(prev =>
+      prev.map((o, i) => i === index ? { id, name: op?.name ?? '' } : o)
+    );
+  };
+  const removeExtraOp = (index: number) => {
+    setAdditionalTechOps(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSave = () => {
     const op = MOCK_TECH_OPERATIONS.find(t => t.id === techOpId);
-    onSave({ ...waybill, techOperationId: techOpId || undefined, techOperationName: op?.name, comment: comment || undefined, status });
+    const filledExtra = additionalTechOps.filter(o => o.id);
+    onSave({
+      ...waybill,
+      techOperationId: techOpId || undefined,
+      techOperationName: op?.name,
+      additionalTechOps: filledExtra.length > 0 ? filledExtra : undefined,
+      comment: comment || undefined,
+      status,
+    });
   };
 
   return (
@@ -222,6 +264,34 @@ function EditModal({ waybill, onSave, onClose }: {
               ))}
             </select>
           </div>
+
+          {additionalTechOps.length > 0 && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Додаткові операції</label>
+              {additionalTechOps.map((op, i) => (
+                <div key={i} className="flex gap-2">
+                  <select value={op.id} onChange={e => updateExtraOp(i, e.target.value)}
+                    className="flex-1 px-3 py-2.5 rounded-xl border border-border focus:outline-none bg-surface text-sm text-gray-700">
+                    <option value="">— Оберіть операцію —</option>
+                    {MOCK_TECH_OPERATIONS.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                  <button type="button" onClick={() => removeExtraOp(i)}
+                    className="px-3 rounded-xl border border-border text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors text-lg leading-none">
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {additionalTechOps.length < 2 && (
+            <button type="button" onClick={addExtraOp}
+              className="text-sm font-medium transition-opacity hover:opacity-70"
+              style={{ color: '#003A5D' }}>
+              + Додати операцію
+            </button>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1.5">Коментар</label>

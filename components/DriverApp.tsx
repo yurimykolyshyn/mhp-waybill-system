@@ -49,6 +49,15 @@ export default function DriverApp({ user, onLogout }: Props) {
     setVehicles(Backend.vehicles.getAll());
   };
 
+  const handleConfirmAssignment = (wb: Waybill) => {
+    const now = new Date();
+    const { shift } = detectShift(now);
+    const odometerStart = Backend.vehicles.getLastOdometer(wb.vehicleId);
+    const clearance = Backend.exams.getActiveClearance(user.id, shift, now);
+    Backend.waybills.confirm(wb.id, now.toISOString(), odometerStart, clearance?.id);
+    refresh();
+  };
+
   const navItems: { v: DriverView; Icon: React.FC<any>; label: string }[] = [
     { v: 'home', Icon: HomeIcon, label: 'Головна' },
     { v: 'history', Icon: ListIcon, label: 'Мої ШЛ' },
@@ -82,6 +91,7 @@ export default function DriverApp({ user, onLogout }: Props) {
             waybills={waybills}
             onOpenShift={() => setView('open')}
             onCloseShift={() => setView('close')}
+            onConfirmAssignment={handleConfirmAssignment}
           />
         )}
         {view === 'open' && (
@@ -127,13 +137,17 @@ export default function DriverApp({ user, onLogout }: Props) {
 }
 
 // ── Home View ──────────────────────────────────────────────────────────────
-function HomeView({ user, openWaybill, vehicles, waybills, onOpenShift, onCloseShift }: {
+function HomeView({ user, openWaybill, vehicles, waybills, onOpenShift, onCloseShift, onConfirmAssignment }: {
   user: WaybillUser; openWaybill: Waybill | null; vehicles: Vehicle[];
   waybills: Waybill[]; onOpenShift: () => void; onCloseShift: () => void;
+  onConfirmAssignment: (wb: Waybill) => void;
 }) {
   const now = new Date();
   const { shift: currentShift, label: shiftLabel } = detectShift(now);
   const shiftExam = Backend.exams.getShiftExam(user.id, currentShift, now);
+  const plannedWb = !openWaybill && shiftExam?.result === 'cleared'
+    ? Backend.waybills.getPlannedForDriver(user.id, currentShift, now)
+    : null;
 
   return (
     <div className="space-y-4">
@@ -198,6 +212,33 @@ function HomeView({ user, openWaybill, vehicles, waybills, onOpenShift, onCloseS
           <p className="text-sm" style={{ color: '#B45309' }}>
             Зверніться до медичного працівника для проходження передрейсового огляду перед початком зміни.
           </p>
+        </div>
+      ) : plannedWb ? (
+        <div className="rounded-2xl p-4 space-y-3 border" style={{ background: '#EFF6FF', borderColor: '#BFDBFE' }}>
+          <div className="flex items-center gap-2">
+            <span className="text-base">📋</span>
+            <span className="text-sm font-semibold" style={{ color: '#1D4ED8' }}>Ваш наряд на сьогодні</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <InfoRow label="ТЗ" value={plannedWb.vehicleNumber} />
+            <InfoRow label="Зміна" value={plannedWb.shift === 'actual' ? 'Факт.' : `${plannedWb.shift} зміна`} />
+            <InfoRow label="Одометр" value={`${Backend.vehicles.getLastOdometer(plannedWb.vehicleId).toLocaleString()} км`} />
+          </div>
+          <button
+            onClick={() => onConfirmAssignment(plannedWb)}
+            className="w-full py-3 text-white font-semibold rounded-xl transition-opacity hover:opacity-90 shadow-sm flex items-center justify-center gap-2"
+            style={{ background: '#003A5D' }}
+          >
+            <CheckIcon className="w-5 h-5" />
+            Підтвердити вихід на зміну
+          </button>
+          <button
+            onClick={onOpenShift}
+            className="w-full text-sm font-medium text-center py-1.5 transition-colors hover:opacity-70"
+            style={{ color: '#6b7280' }}
+          >
+            Відкрити інший ШЛ
+          </button>
         </div>
       ) : (
         <button
@@ -375,6 +416,21 @@ function CloseShiftView({ waybill, onSubmit, onCancel }: {
   const [techOpId, setTechOpId] = useState('');
   const [comment, setComment] = useState(waybill.comment || '');
   const [error, setError] = useState('');
+  const [additionalTechOps, setAdditionalTechOps] = useState<{ id: string; name: string }[]>([]);
+
+  const addExtraOp = () => {
+    if (additionalTechOps.length >= 2) return;
+    setAdditionalTechOps(prev => [...prev, { id: '', name: '' }]);
+  };
+  const updateExtraOp = (index: number, id: string) => {
+    const op = MOCK_TECH_OPERATIONS.find(t => t.id === id);
+    setAdditionalTechOps(prev =>
+      prev.map((o, i) => i === index ? { id, name: op?.name ?? '' } : o)
+    );
+  };
+  const removeExtraOp = (index: number) => {
+    setAdditionalTechOps(prev => prev.filter((_, i) => i !== index));
+  };
 
   const now = new Date();
   const selectedOp = MOCK_TECH_OPERATIONS.find(t => t.id === techOpId);
@@ -386,12 +442,14 @@ function CloseShiftView({ waybill, onSubmit, onCancel }: {
       setError('Кінцевий одометр має бути ≥ початкового'); return;
     }
     if (!techOpId) { setError('Оберіть технологічну операцію'); return; }
+    const filledExtra = additionalTechOps.filter(o => o.id);
     onSubmit({
       ...waybill,
       closeTime: now.toISOString(),
       odometerEnd: end,
       techOperationId: techOpId,
       techOperationName: selectedOp?.name,
+      additionalTechOps: filledExtra.length > 0 ? filledExtra : undefined,
       comment: comment || undefined,
       status: 'closed',
     });
@@ -450,6 +508,37 @@ function CloseShiftView({ waybill, onSubmit, onCancel }: {
             ))}
           </select>
         </div>
+
+        {additionalTechOps.length > 0 && (
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-600">Додаткові операції</label>
+            {additionalTechOps.map((op, i) => (
+              <div key={i} className="flex gap-2">
+                <select
+                  value={op.id}
+                  onChange={e => updateExtraOp(i, e.target.value)}
+                  className="flex-1 px-3 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#003A5D]/20 bg-surface text-gray-800 text-sm"
+                >
+                  <option value="">— Оберіть операцію —</option>
+                  {MOCK_TECH_OPERATIONS.map(t => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+                <button type="button" onClick={() => removeExtraOp(i)}
+                  className="px-3 rounded-xl border border-border text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors text-lg leading-none">
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        {additionalTechOps.length < 2 && (
+          <button type="button" onClick={addExtraOp}
+            className="text-sm font-medium transition-opacity hover:opacity-70"
+            style={{ color: '#003A5D' }}>
+            + Додати операцію
+          </button>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1.5">Коментар</label>

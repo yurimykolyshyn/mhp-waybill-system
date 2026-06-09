@@ -5,7 +5,9 @@ import Dashboard from './Dashboard';
 import WaybillList from './WaybillList';
 import VehiclesView from './VehiclesView';
 import DriversView from './DriversView';
-import { ListIcon, BusIcon, UserIcon, LogoutIcon, MenuIcon, ChartIcon } from './icons';
+import { ListIcon, BusIcon, UserIcon, LogoutIcon, MenuIcon, ChartIcon, CalendarIcon, ClipboardListIcon } from './icons';
+import AssignmentsView from './AssignmentsView';
+import TodayView from './TodayView';
 
 interface Props {
   user: WaybillUser;
@@ -14,12 +16,24 @@ interface Props {
 
 const MHP_BLUE = '#003A5D';
 
-const NAV = [
-  { v: 'dashboard' as ManagerView, Icon: ChartIcon, label: 'Дашборд' },
-  { v: 'waybills' as ManagerView, Icon: ListIcon, label: 'ШЛ' },
-  { v: 'vehicles' as ManagerView, Icon: BusIcon, label: 'ТЗ' },
-  { v: 'users' as ManagerView, Icon: UserIcon, label: 'Водії' },
-];
+function getNav(role: string): { v: ManagerView; Icon: React.FC<any>; label: string }[] {
+  const all: { v: ManagerView; Icon: React.FC<any>; label: string }[] = [
+    { v: 'dashboard',   Icon: ChartIcon,        label: 'Дашборд' },
+    { v: 'assignments', Icon: CalendarIcon,      label: 'Наряди' },
+    { v: 'today',       Icon: ClipboardListIcon, label: 'На сьогодні' },
+    { v: 'waybills',    Icon: ListIcon,          label: 'ШЛ' },
+    { v: 'vehicles',    Icon: BusIcon,           label: 'ТЗ' },
+    { v: 'users',       Icon: UserIcon,          label: 'Водії' },
+  ];
+  const roleViews: Record<string, ManagerView[]> = {
+    logist:     ['dashboard', 'assignments', 'waybills', 'vehicles', 'users'],
+    dispatcher: ['dashboard', 'today', 'waybills', 'vehicles', 'users'],
+    admin:      ['dashboard', 'assignments', 'today', 'waybills', 'vehicles', 'users'],
+    mechanic:   ['dashboard', 'waybills', 'vehicles'],
+  };
+  const allowed = roleViews[role] ?? ['dashboard', 'waybills', 'vehicles', 'users'];
+  return all.filter(n => allowed.includes(n.v));
+}
 
 const ROLE_LABELS: Record<string, string> = {
   driver: 'Водій', dispatcher: 'Диспетчер', mechanic: 'Механік',
@@ -27,7 +41,11 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export default function ManagerApp({ user, onLogout }: Props) {
-  const [view, setView] = useState<ManagerView>('dashboard');
+  const defaultView: ManagerView =
+    user.role === 'logist' ? 'assignments' :
+    user.role === 'dispatcher' ? 'today' :
+    'dashboard';
+  const [view, setView] = useState<ManagerView>(defaultView);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [waybills, setWaybills] = useState<Waybill[]>([]);
 
@@ -67,7 +85,7 @@ export default function ManagerApp({ user, onLogout }: Props) {
 
         {/* Nav */}
         <nav className="flex-1 py-3">
-          {NAV.map(({ v, Icon, label }) => (
+          {getNav(user.role).map(({ v, Icon, label }) => (
             <button
               key={v}
               onClick={() => setView(v)}
@@ -115,7 +133,7 @@ export default function ManagerApp({ user, onLogout }: Props) {
             <MenuIcon className="w-5 h-5" />
           </button>
           <h2 className="font-semibold text-gray-800">
-            {NAV.find(n => n.v === view)?.label}
+            {getNav(user.role).find(n => n.v === view)?.label ?? view}
           </h2>
           <div className="ml-auto text-xs text-gray-400">
             {new Date().toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -128,6 +146,8 @@ export default function ManagerApp({ user, onLogout }: Props) {
           {view === 'waybills' && <WaybillList waybills={waybills} onUpdate={handleUpdateWaybill} onAdd={handleAddWaybill} />}
           {view === 'vehicles' && <VehiclesView />}
           {view === 'users' && <DriversView />}
+          {view === 'assignments' && <AssignmentsView />}
+          {view === 'today' && <TodayView />}
         </main>
       </div>
     </div>

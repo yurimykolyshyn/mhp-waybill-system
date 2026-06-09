@@ -31,6 +31,21 @@ export default function CreateWaybillModal({ onSave, onClose }: Props) {
   const [odometerEnd, setOdometerEnd] = useState('');
   const [techOpId, setTechOpId] = useState('');
   const [comment, setComment] = useState('');
+  const [additionalTechOps, setAdditionalTechOps] = useState<{ id: string; name: string }[]>([]);
+
+  const addExtraOp = () => {
+    if (additionalTechOps.length >= 2) return;
+    setAdditionalTechOps(prev => [...prev, { id: '', name: '' }]);
+  };
+  const updateExtraOp = (index: number, id: string) => {
+    const op = MOCK_TECH_OPERATIONS.find(t => t.id === id);
+    setAdditionalTechOps(prev =>
+      prev.map((o, i) => i === index ? { id, name: op?.name ?? '' } : o)
+    );
+  };
+  const removeExtraOp = (index: number) => {
+    setAdditionalTechOps(prev => prev.filter((_, i) => i !== index));
+  };
 
   const [error, setError] = useState('');
 
@@ -76,6 +91,7 @@ export default function CreateWaybillModal({ onSave, onClose }: Props) {
     const openISO  = new Date(openTime).toISOString();
     const closeISO = closeTouched && closeTime ? new Date(closeTime).toISOString() : undefined;
     const end      = closeTouched ? Number(odometerEnd) : undefined;
+    const filledExtra = additionalTechOps.filter(o => o.id);
 
     onSave({
       id: uid(),
@@ -90,6 +106,7 @@ export default function CreateWaybillModal({ onSave, onClose }: Props) {
       odometerEnd: end,
       techOperationId: techOpId || undefined,
       techOperationName: techOp?.name,
+      additionalTechOps: filledExtra.length > 0 ? filledExtra : undefined,
       comment: comment.trim() || undefined,
       status: closeTouched ? 'closed' : 'open',
       isApprentice: !!selectedDriver?.isApprentice,
@@ -222,6 +239,34 @@ export default function CreateWaybillModal({ onSave, onClose }: Props) {
               ))}
             </select>
           </Field>
+
+          {additionalTechOps.length > 0 && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-600">Додаткові операції</label>
+              {additionalTechOps.map((op, i) => (
+                <div key={i} className="flex gap-2">
+                  <select value={op.id} onChange={e => updateExtraOp(i, e.target.value)}
+                    className={inputCls + ' flex-1'}>
+                    <option value="">— Оберіть операцію —</option>
+                    {MOCK_TECH_OPERATIONS.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                  <button type="button" onClick={() => removeExtraOp(i)}
+                    className="px-3 rounded-xl border border-border text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors text-lg leading-none">
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {additionalTechOps.length < 2 && (
+            <button type="button" onClick={addExtraOp}
+              className="text-sm font-medium transition-opacity hover:opacity-70"
+              style={{ color: '#003A5D' }}>
+              + Додати операцію
+            </button>
+          )}
 
           <Field label="Коментар">
             <textarea
